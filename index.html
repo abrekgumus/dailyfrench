@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fransızca Hazinesi</title>
+    <style>
+        :root {
+            /* Light Theme Defaults */
+            --primary: #0055A4; /* French Blue */
+            --primary-dark: #003d7a;
+            --accent: #EF4135; /* French Red */
+            --bg: #f4f7fa;
+            --paper: #ffffff;
+            --text-main: #2c3e50;
+            --text-light: #7f8c8d;
+            --pattern-opacity: 0.04;
+            --shadow: rgba(0,0,0,0.1);
+            --correct: #10b981;
+            --wrong: #ef4444;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme Overrides */
+            --primary: #3b82f6; /* Lighter Blue for dark mode visibility */
+            --primary-dark: #1d4ed8;
+            --accent: #f87171; /* Softer Red */
+            --bg: #0f172a; /* Slate 900 */
+            --paper: #1e293b; /* Slate 800 */
+            --text-main: #e2e8f0;
+            --text-light: #94a3b8;
+            --pattern-opacity: 0.08; /* Slightly more visible on dark */
+            --shadow: rgba(0,0,0,0.4);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg);
+            /* SVG Data URI for Fleur-de-lis pattern */
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='20' text-anchor='middle' dominant-baseline='central' fill='%23888' fill-opacity='0.4'%3E⚜%3C/text%3E%3C/svg%3E");
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 2rem 1rem 5rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 20px var(--shadow);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
+        }
+
+        /* Dark Mode Toggle - Positioned Absolute Top Right */
+        .theme-switch-wrapper {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            z-index: 100; /* Ensure it stays on top */
+        }
+        
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+        
+        .theme-switch input { display:none; }
+        
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            background-color: white;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* Icon (Static Decoration) */
+        .symbol-wrapper {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            /* Removed clickability cursor */
+            cursor: default; 
+        }
+
+        header h1 { margin: 0; font-size: 3rem; font-weight: 800; letter-spacing: -1px; }
+        header p { font-size: 1.1rem; opacity: 0.9; margin-top: 0.5rem; font-style: italic; }
+
+        /* Controls */
+        .controls-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .control-item {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        input[type="date"] {
+            background: transparent;
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+
+        /* --- CONTAINER --- */
+        .container {
+            max-width: 1100px;
+            margin: -40px auto 0;
+            padding: 0 1.5rem 4rem;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+            z-index: 10;
+        }
+
+        .card {
+            background: var(--paper);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border-top: 5px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover { transform: translateY(-5px); }
+
+        .label {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .label::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+        .french-text { font-size: 2.2rem; font-weight: 800; line-height: 1.1; margin: 0 0 0.5rem 0; color: var(--primary); }
+        
+        .pronunciation { 
+            font-family: 'Consolas', monospace; 
+            color: var(--accent); 
+            font-size: 0.95rem; 
+            margin-bottom: 1rem; 
+            font-style: italic; 
+            background: rgba(0,0,0,0.03);
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .meaning { 
+            font-size: 1.15rem; 
+            line-height: 1.6; 
+            margin-top: auto; 
+            border-left: 4px solid #e2e8f0; 
+            padding-left: 1rem; 
+            color: var(--text-main);
+        }
+
+        /* Card Variations */
+        .card-special { 
+            grid-column: span 12; 
+            border-top-color: var(--accent); 
+            background: linear-gradient(to right, var(--paper), var(--bg));
+        }
+        .card-special .label { color: var(--accent); }
+
+        .card-word { grid-column: span 6; border-top-color: var(--primary); }
+        .card-word .label { color: var(--primary); }
+
+        .card-idiom { grid-column: span 6; border-top-color: #8e44ad; }
+        .card-idiom .label { color: #8e44ad; }
+
+        .card-proverb { grid-column: span 12; border-top-color: #27ae60; }
+        .card-proverb .label { color: #27ae60; }
+
+        /* --- QUIZ --- */
+        .quiz-container {
+            grid-column: span 12;
+            background: var(--paper);
+            padding: 2.5rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 10px var(--shadow);
+            margin-top: 1rem;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .score-correct { color: var(--correct); }
+        .score-wrong { color: var(--wrong); }
+
+        .quiz-question { font-size: 1.6rem; margin: 1rem 0; color: var(--text-main); }
+        .quiz-word { color: var(--primary); font-weight: 800; }
+
+        .quiz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+
+        .quiz-btn {
+            background: var(--bg); 
+            border: 2px solid rgba(0,0,0,0.1); 
+            padding: 1.2rem; border-radius: 12px;
+            font-size: 1.05rem; font-weight: 600; color: var(--text-main); cursor: pointer; transition: all 0.2s;
+        }
+        .quiz-btn:hover:not([disabled]) { border-color: var(--primary); background: rgba(0,85,164,0.05); }
+        .quiz-btn.correct { background: rgba(16, 185, 129, 0.2); border-color: var(--correct); color: #065f46; }
+        [data-theme="dark"] .quiz-btn.correct { color: #6ee7b7; }
+        
+        .quiz-btn.wrong { background: rgba(239, 68, 68, 0.2); border-color: var(--wrong); color: #991b1b; opacity: 0.6; }
+        [data-theme="dark"] .quiz-btn.wrong { color: #fca5a5; }
+
+        @media (max-width: 768px) {
+            .card-word, .card-idiom { grid-column: span 12; }
+            header h1 { font-size: 2.2rem; }
+            .controls-bar { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox" title="Koyu Mod / Açık Mod">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider"></div>
+        </label>
+    </div>
+
+    <div class="symbol-wrapper">⚜</div>
+
+    <h1>Fransızca Hazinesi</h1>
+    <p>Günlük Kelime, Deyim ve Atasözleri</p>
+
+    <div class="controls-bar">
+        <div class="control-item">
+            <span>📅</span>
+            <input type="date" id="date-picker">
+        </div>
+        <div class="control-item" title="Seri (Kaç gün üst üste)">
+            <span>🔥</span>
+            <span id="streak-count">0</span> Gün Serisi
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    
+    <div class="card card-special">
+        <div class="label">Ayın Kültürel Kelimesi</div>
+        <h2 class="french-text" id="special-fr">...</h2>
+        <div class="pronunciation" id="special-pron">...</div>
+        <div class="meaning" id="special-tr">...</div>
+    </div>
+
+    <div class="card card-word">
+        <div class="label">Günün Kelimesi</div>
+        <h2 class="french-text" id="word-fr">...</h2>
+        <div class="pronunciation" id="word-pron">...</div>
+        <div class="meaning" id="word-tr">...</div>
+    </div>
+
+    <div class="card card-idiom">
+        <div class="label">Günün Deyimi</div>
+        <h2 class="french-text" id="idiom-fr">...</h2>
+        <div class="pronunciation" id="idiom-pron">...</div>
+        <div class="meaning" id="idiom-tr">...</div>
+    </div>
+
+    <div class="card card-proverb">
+        <div class="label">Günün Atasözü</div>
+        <h2 class="french-text" id="proverb-fr">...</h2>
+        <div class="pronunciation" id="proverb-pron">...</div>
+        <div class="meaning" id="proverb-tr">...</div>
+    </div>
+
+    <div class="quiz-container">
+        <div class="score-board">
+            <div class="score-correct">✔ <span id="score-correct">0</span></div>
+            <div class="score-wrong">✖ <span id="score-wrong">0</span></div>
+        </div>
+        
+        <div class="label" style="justify-content: center;">Kendini Dene</div>
+        <div class="quiz-question">"<span class="quiz-word" id="quiz-question"></span>" kelimesinin anlamı nedir?</div>
+        
+        <div style="font-size:0.8rem; color:var(--text-light); margin-bottom:1rem;">(Seriyi sürdürmek için çöz • Yeni soru için sayfayı yenile)</div>
+        
+        <div class="quiz-grid" id="quiz-options"></div>
+        <div id="quiz-feedback" style="margin-top:1.5rem; font-weight:800; min-height:1.5em; color:var(--text-main);"></div>
+    </div>
+
+</div>
+
+<script>
+    /* ----------------------------------------------------------------
+       VERİ TABANI (FRANSIZCA - TÜRKÇE)
+    ---------------------------------------------------------------- */
+    const DB = {
+        words: [
+            {f:"Bonjour", p:"Bon-jur", m:"Merhaba / İyi günler"},
+            {f:"Merci", p:"Mer-si", m:"Teşekkürler"},
+            {f:"S'il vous plaît", p:"Sil-vu-ple", m:"Lütfen (Resmi)"},
+            {f:"Enchanté", p:"An-şan-te", m:"Memnun oldum"},
+            {f:"Oui", p:"Vi", m:"Evet"},
+            {f:"Non", p:"Non", m:"Hayır"},
+            {f:"Chat", p:"Şa", m:"Kedi"},
+            {f:"Chien", p:"Şiyen", m:"Köpek"},
+            {f:"Maison", p:"Me-zon", m:"Ev"},
+            {f:"Voiture", p:"Vua-tür", m:"Araba"},
+            {f:"École", p:"E-kol", m:"Okul"},
+            {f:"Livre", p:"Liv-r", m:"Kitap"},
+            {f:"Amour", p:"A-mur", m:"Aşk"},
+            {f:"Soleil", p:"So-ley", m:"Güneş"},
+            {f:"Lune", p:"Lün", m:"Ay"},
+            {f:"Étoile", p:"E-tual", m:"Yıldız"},
+            {f:"Ciel", p:"Siyel", m:"Gökyüzü"},
+            {f:"Mer", p:"Mer", m:"Deniz"},
+            {f:"Fleur", p:"Flör", m:"Çiçek"},
+            {f:"Arbre", p:"Ar-br", m:"Ağaç"},
+            {f:"Pain", p:"Pen", m:"Ekmek"},
+            {f:"Eau", p:"O", m:"Su"},
+            {f:"Vin", p:"Ven", m:"Şarap"},
+            {f:"Fromage", p:"Fro-maj", m:"Peynir"},
+            {f:"Rue", p:"Rü", m:"Sokak"},
+            {f:"Ville", p:"Vil", m:"Şehir"},
+            {f:"Pays", p:"Pe-yi", m:"Ülke"},
+            {f:"Voyage", p:"Vo-yaj", m:"Yolculuk"},
+            {f:"Rêve", p:"Rev", m:"Rüya"},
+            {f:"Cauchemar", p:"Koş-mar", m:"Kabus"},
+            {f:"Temps", p:"Tan", m:"Zaman / Hava"},
+            {f:"Heure", p:"Ör", m:"Saat"},
+            {f:"Jour", p:"Jur", m:"Gün"},
+            {f:"Nuit", p:"Nüi", m:"Gece"},
+            {f:"Matin", p:"Ma-ten", m:"Sabah"},
+            {f:"Soir", p:"Suar", m:"Akşam"},
+            {f:"Homme", p:"Om", m:"Adam"},
+            {f:"Femme", p:"Fam", m:"Kadın"},
+            {f:"Enfant", p:"An-fan", m:"Çocuk"},
+            {f:"Ami", p:"A-mi", m:"Arkadaş"},
+            {f:"Travail", p:"Tra-vay", m:"İş / Çalışma"},
+            {f:"Argent", p:"Ar-jan", m:"Para / Gümüş"},
+            {f:"Bonheur", p:"Bo-nör", m:"Mutluluk"},
+            {f:"Malheur", p:"Ma-lör", m:"Mutsuzluk / Kötü şans"},
+            {f:"Espoir", p:"Es-puar", m:"Umut"},
+            {f:"Liberté", p:"Li-ber-te", m:"Özgürlük"},
+            {f:"Vérité", p:"Ve-ri-te", m:"Gerçek"},
+            {f:"Mensonge", p:"Man-sonj", m:"Yalan"},
+            {f:"Cœur", p:"Kör", m:"Kalp"},
+            {f:"Tête", p:"Tet", m:"Baş / Kafa"},
+            {f:"Main", p:"Men", m:"El"},
+            {f:"Yeux", p:"Yö", m:"Gözler"},
+            {f:"Bouche", p:"Buş", m:"Ağız"},
+            {f:"Sourire", p:"Su-rir", m:"Gülümseme"},
+            {f:"Pleurer", p:"Plö-re", m:"Ağlamak"},
+            {f:"Chanter", p:"Şan-te", m:"Şarkı söylemek"},
+            {f:"Danser", p:"Dan-se", m:"Dans etmek"},
+            {f:"Manger", p:"Man-je", m:"Yemek yemek"},
+            {f:"Boire", p:"Buar", m:"İçmek"},
+            {f:"Dormir", p:"Dor-mir", m:"Uyumak"},
+            {f:"Lire", p:"Lir", m:"Okumak"},
+            {f:"Écrire", p:"E-krir", m:"Yazmak"},
+            {f:"Parler", p:"Par-le", m:"Konuşmak"},
+            {f:"Écouter", p:"E-ku-te", m:"Dinlemek"},
+            {f:"Regarder", p:"Rö-gar-de", m:"İzlemek / Bakmak"},
+            {f:"Attendre", p:"A-tan-dr", m:"Beklemek"},
+            {f:"Chercher", p:"Şer-şe", m:"Aramak"},
+            {f:"Trouver", p:"Tru-ve", m:"Bulmak"},
+            {f:"Perdre", p:"Per-dr", m:"Kaybetmek"},
+            {f:"Gagner", p:"Gan-ye", m:"Kazanmak"},
+            {f:"Aider", p:"E-de", m:"Yardım etmek"},
+            {f:"Aimer", p:"E-me", m:"Sevmek"},
+            {f:"Détester", p:"De-tes-te", m:"Nefret etmek"},
+            {f:"Penser", p:"Pan-se", m:"Düşünmek"},
+            {f:"Savoir", p:"Sa-vuar", m:"Bilmek"},
+            {f:"Connaître", p:"Ko-ne-tr", m:"Tanımak / Bilmek"},
+            {f:"Vouloir", p:"Vu-luar", m:"İstemek"},
+            {f:"Pouvoir", p:"Pu-vuar", m:"Yapabilmek (-ebilmek)"},
+            {f:"Devoir", p:"Dö-vuar", m:"Zorunda olmak / Ödev"},
+            {f:"Aller", p:"A-le", m:"Gitmek"},
+            {f:"Venir", p:"Vö-nir", m:"Gelmek"},
+            {f:"Grand", p:"Gran", m:"Büyük / Uzun"},
+            {f:"Petit", p:"Pö-ti", m:"Küçük"},
+            {f:"Nouveau", p:"Nu-vo", m:"Yeni"},
+            {f:"Vieux", p:"Viyö", m:"Eski / Yaşlı"},
+            {f:"Beau", p:"Bo", m:"Güzel / Yakışıklı"},
+            {f:"Bon", p:"Bon", m:"İyi"},
+            {f:"Mauvais", p:"Mo-ve", m:"Kötü"},
+            {f:"Chaud", p:"Şo", m:"Sıcak"},
+            {f:"Froid", p:"Frua", m:"Soğuk"},
+            {f:"Rapide", p:"Ra-pid", m:"Hızlı"},
+            {f:"Lent", p:"Lan", m:"Yavaş"},
+            {f:"Facile", p:"Fa-sil", m:"Kolay"},
+            {f:"Difficile", p:"Di-fi-sil", m:"Zor"},
+            {f:"Riche", p:"Riş", m:"Zengin"},
+            {f:"Pauvre", p:"Pov-r", m:"Fakir"},
+            {f:"Fort", p:"For", m:"Güçlü"},
+            {f:"Faible", p:"Feb-l", m:"Zayıf / Güçsüz"},
+            {f:"Heureux", p:"Ö-rö", m:"Mutlu"},
+            {f:"Triste", p:"Trist", m:"Üzgün"},
+            {f:"Fatigué", p:"Fa-ti-ge", m:"Yorgun"},
+            {f:"Malade", p:"Ma-lad", m:"Hasta"},
+            {f:"Seul", p:"Söl", m:"Yalnız"},
+            {f:"Ensemble", p:"An-sam-bl", m:"Birlikte"},
+            {f:"Toujours", p:"Tu-jur", m:"Her zaman"},
+            {f:"Jamais", p:"Ja-me", m:"Asla"},
+            {f:"Parfois", p:"Par-fua", m:"Bazen"},
+            {f:"Maintenant", p:"Men-tö-nan", m:"Şimdi"},
+            {f:"Demain", p:"Dö-men", m:"Yarın"},
+            {f:"Hier", p:"Yer", m:"Dün"},
+            {f:"Ici", p:"İ-si", m:"Burada"},
+            {f:"Là-bas", p:"La-ba", m:"Orada"},
+            {f:"Pourquoi", p:"Pur-kua", m:"Neden"},
+            {f:"Parce que", p:"Pars-kö", m:"Çünkü"}
+        ],
+        idioms: [
+            {f:"Poser un lapin", p:"Po-ze an la-pen", m:"Birini ekmek, buluşmaya gitmemek. (Kelime anlamı: Tavşan koymak)"},
+            {f:"Avoir le cafard", p:"A-vuar lö ka-far", m:"Depresif hissetmek, morali bozuk olmak. (Kelime anlamı: Hamamböceğine sahip olmak)"},
+            {f:"Tomber dans les pommes", p:"Tom-be dan le pom", m:"Bayılmak. (Kelime anlamı: Elmaların içine düşmek)"},
+            {f:"Raconter des salades", p:"Ra-kon-te de sa-lad", m:"Yalan söylemek, uydurmak. (Kelime anlamı: Salatalar anlatmak)"},
+            {f:"Avoir la pêche", p:"A-vuar la peş", m:"Enerjik olmak, zinde hissetmek. (Kelime anlamı: Şeftaliye sahip olmak)"},
+            {f:"Casser les pieds", p:"Ka-se le piye", m:"Birini çok rahatsız etmek, kafa ütülemek. (Kelime anlamı: Ayakları kırmak)"},
+            {f:"Donner sa langue au chat", p:"Do-ne sa lang o şa", m:"Pes etmek (tahmin oyununda), cevabı bilememek. (Kelime anlamı: Dilini kediye vermek)"},
+            {f:"Avoir un chat dans la gorge", p:"A-vuar an şa dan la gorj", m:"Sesi kısılmak, boğazı gıcıklanmak. (Kelime anlamı: Boğazında kedi olmak)"},
+            {f:"Être dans la lune", p:"Et-r dan la lün", m:"Dalgın olmak, hayallere dalmak. (Kelime anlamı: Ayda olmak)"},
+            {f:"Faire la grasse matinée", p:"Fer la gras ma-ti-ne", m:"Öğlene kadar uyumak, sabah keyfi yapmak. (Kelime anlamı: Yağlı sabah yapmak)"},
+            {f:"Avoir la main verte", p:"A-vuar la men vert", m:"Bitkilerle arası iyi olmak. (Kelime anlamı: Yeşil ele sahip olmak)"},
+            {f:"Mettre son grain de sel", p:"Met-r son gran dö sel", m:"Her şeye karışmak, istenmeyen fikir beyan etmek. (Kelime anlamı: Tuz tanesini koymak)"},
+            {f:"C'est la fin des haricots", p:"Se la fen de a-ri-ko", m:"Her şey bitti, artık umut yok. (Kelime anlamı: Bu fasulyelerin sonu)"},
+            {f:"Avoir les yeux plus gros que le ventre", p:"A-vuar le yö plü gro kö lö vant-r", m:"Açgözlülük yapmak, yiyebileceğinden fazlasını almak. (Kelime anlamı: Gözleri midesinden büyük olmak)"},
+            {f:"Appeler un chat un chat", p:"A-pö-le an şa an şa", m:"Dobra olmak, lafı dolandırmamak. (Kelime anlamı: Kediye kedi demek)"},
+            {f:"Boire comme un trou", p:"Buar kom an tru", m:"Çok fazla içki içmek. (Kelime anlamı: Delik gibi içmek)"},
+            {f:"En faire tout un fromage", p:"An fer tut an fro-maj", m:"Bir şeyi çok abartmak, pireyi deve yapmak. (Kelime anlamı: Ondan bütün bir peynir yapmak)"},
+            {f:"Pleuvoir des cordes", p:"Plö-vuar de kord", m:"Bardaktan boşalırcasına yağmur yağmak. (Kelime anlamı: İp yağmak)"},
+            {f:"Avoir le coup de foudre", p:"A-vuar lö ku dö fud-r", m:"İlk görüşte aşık olmak. (Kelime anlamı: Yıldırım çarpmasına uğramak)"},
+            {f:"Être une poule mouillée", p:"Et-r ün pul mu-ye", m:"Korkak olmak. (Kelime anlamı: Islak tavuk olmak)"},
+            {f:"Avoir le melon", p:"A-vuar lö mö-lon", m:"Kibirli olmak, burnu havada olmak. (Kelime anlamı: Kavuna sahip olmak - koca kafalı)"},
+            {f:"Couper les cheveux en quatre", p:"Ku-pe le şö-vö an kat-r", m:"Kılı kırk yarmak, aşırı detaycı olmak. (Kelime anlamı: Saçı dörde bölmek)"},
+            {f:"Se creuser la tête", p:"Sö krö-ze la tet", m:"Kafa patlatmak, çok düşünmek. (Kelime anlamı: Kafasını kazmak)"},
+            {f:"Faire un froid de canard", p:"Fer an frua dö ka-nar", m:"Havanın çok soğuk olması. (Kelime anlamı: Ördek soğuğu yapmak)"},
+            {f:"Quand les poules auront des dents", p:"Kan le pul o-ron de dan", m:"Çıkmaz ayın son çarşambası, asla. (Kelime anlamı: Tavukların dişleri olduğunda)"},
+            {f:"L'habit ne fait pas le moine", p:"La-bi nö fe pa lö muan", m:"Görünüşe aldanmamalı. (Kelime anlamı: Kıyafet keşişi keşiş yapmaz)"},
+            {f:"Manger sur le pouce", p:"Man-je sür lö pus", m:"Ayaküstü hızlıca yemek. (Kelime anlamı: Başparmak üzerinde yemek)"},
+            {f:"Rouler quelqu'un dans la farine", p:"Ru-le kel-kan dan la fa-rin", m:"Birini kandırmak, dolandırmak. (Kelime anlamı: Birini una bulamak)"},
+            {f:"Tenir la chandelle", p:"Tö-nir la şan-del", m:"İki sevgilinin yanındaki üçüncü kişi olmak (fazlalık). (Kelime anlamı: Mumu tutmak)"},
+            {f:"Tomber dans le panneau", p:"Tom-be dan lö pa-no", m:"Tuzağa düşmek. (Kelime anlamı: Tabelaya çarpmak)"}
+        ],
+        proverbs: [
+            {f:"Qui vivra verra", p:"Ki viv-ra ve-ra", m:"Zaman gösterir, yaşayan görür. (Kelime anlamı: Kim yaşarsa o görecek)"},
+            {f:"Petit à petit, l'oiseau fait son nid", p:"Pö-ti a pö-ti, lua-zo fe son ni", m:"Damlaya damlaya göl olur. (Kelime anlamı: Kuş yuvasını azar azar yapar)"},
+            {f:"Mieux vaut tard que jamais", p:"Miyö vo tar kö ja-me", m:"Geç olsun güç olmasın. (Kelime anlamı: Geç olması hiç olmamasından iyidir)"},
+            {f:"Vouloir, c'est pouvoir", p:"Vu-luar, se pu-vuar", m:"İsteyen başarır. (Kelime anlamı: İstemek yapabilmektir)"},
+            {f:"L'appétit vient en mangeant", p:"La-pe-ti viyen an man-jan", m:"İştah yedikçe açılır (Başladıkça heves artar). (Kelime anlamı: İştah yerken gelir)"},
+            {f:"Les murs ont des oreilles", p:"Le mür on de zo-rey", m:"Yerin kulağı vardır. (Kelime anlamı: Duvarların kulakları vardır)"},
+            {f:"Après la pluie, le beau temps", p:"Ap-re la plüi, lö bo tan", m:"Her zorluktan sonra bir kolaylık vardır. (Kelime anlamı: Yağmurdan sonra güzel hava)"},
+            {f:"Chacun voit midi à sa porte", p:"Şa-kan vua mi-di a sa port", m:"Herkes olayları kendi işine geldiği gibi yorumlar. (Kelime anlamı: Herkes öğleni kendi kapısında görür)"},
+            {f:"Il ne faut pas vendre la peau de l'ours avant de l'avoir tué", p:"İl nö fo pa vand-r la po dö lurs a-van dö la-vuar tü-e", m:"Dereyi görmeden paçaları sıvama. (Kelime anlamı: Ayıyı öldürmeden postunu satma)"},
+            {f:"Loin des yeux, loin du cœur", p:"Luan de yö, luan dü kör", m:"Gözden ırak olan gönülden de ırak olur. (Kelime anlamı: Gözden uzak, kalpten uzak)"},
+            {f:"Qui vole un œuf vole un bœuf", p:"Ki vol an öf vol an böf", m:"Küçük hırsızlıklar büyüklerine yol açar. (Kelime anlamı: Yumurta çalan öküz de çalar)"},
+            {f:"Tout est bien qui finit bien", p:"Tu te biyen ki fi-ni biyen", m:"Sonu iyi biten her şey iyidir."},
+            {f:"La nuit porte conseil", p:"La nüi port kon-sey", m:"Sabah ola hayrola. (Kelime anlamı: Gece tavsiye getirir)"},
+            {f:"C'est la vie", p:"Se la vi", m:"Hayat bu, böyle şeyler olur."},
+            {f:"Impossible n'est pas français", p:"Em-po-sib-l ne pa fran-se", m:"İmkansız diye bir şey yoktur. (Kelime anlamı: İmkansız Fransızca değildir)"},
+            {f:"Qui se ressemble s'assemble", p:"Ki sö rö-sam-bl sa-sam-bl", m:"Tencere yuvarlanmış kapağını bulmuş. (Kelime anlamı: Birbirine benzeyenler bir araya gelir)"},
+            {f:"Il n'y a pas de fumée sans feu", p:"İl niyam pa dö fü-me san fö", m:"Ateş olmayan yerden duman çıkmaz. (Kelime anlamı: Ateşsiz duman yoktur)"},
+            {f:"Rira bien qui rira le dernier", p:"Ri-ra biyen ki ri-ra lö der-niye", m:"Son gülen iyi güler."},
+            {f:"Les bons comptes font les bons amis", p:"Le bon kont fon le bon a-mi", m:"Alışverişte dürüstlük dostluğu pekiştirir. (Kelime anlamı: İyi hesaplar iyi dostlar yapar)"},
+            {f:"Un tiens vaut mieux que deux tu l'auras", p:"An tiyen vo miyö kö dö tü lo-ra", m:"Eldeki serçe, damdaki güvercinden iyidir. (Kelime anlamı: Bir 'al', iki 'alacaksın'dan iyidir)"},
+            {f:"On ne fait pas d'omelette sans casser des œufs", p:"On nö fe pa dom-let san ka-se de zö", m:"Fedakarlık yapmadan sonuç alınmaz. (Kelime anlamı: Yumurta kırmadan omlet yapılmaz)"},
+            {f:"Qui sème le vent récolte la tempête", p:"Ki sem lö van re-kolt la tam-pet", m:"Rüzgar eken fırtına biçer."},
+            {f:"Pierre qui roule n'amasse pas de mousse", p:"Piyer ki rul na-mas pa dö mus", m:"İşleyen demir ışıldar / Yuvarlanan taş yosun tutmaz."},
+            {f:"Mieux vaut être seul que mal accompagné", p:"Miyö vo et-r söl kö mal a-kom-pan-ye", m:"Kötü bir arkadaşın olacağına yalnız ol daha iyi. (Kelime anlamı: Kötü eşlik edilmektense yalnız olmak iyidir)"}
+        ],
+        specials: [
+            {f:"Déjà vu", p:"De-ja vü", m:"Daha önce yaşanmışlık hissi."},
+            {f:"Rendez-vous", p:"Ran-de vu", m:"Buluşma, randevu."},
+            {f:"Flâneur", p:"Fla-nör", m:"Şehirde aylak aylak dolaşan, etrafı gözlemleyen kişi."},
+            {f:"L'esprit de l'escalier", p:"Les-pri dö les-kal-iye", m:"Merdiven aklı. (Tam ortamdan ayrıldıktan sonra akla gelen hazırcevap laf)."},
+            {f:"Savoir-vivre", p:"Sa-vuar viv-r", m:"Görgü kuralları, yaşamayı bilmek."},
+            {f:"Joie de vivre", p:"Jua dö viv-r", m:"Yaşama sevinci."},
+            {f:"Coup d'état", p:"Ku de-ta", m:"Darbe (Devlet darbesi)."},
+            {f:"Tête-à-tête", p:"Tet a tet", m:"Baş başa (özel görüşme)."},
+            {f:"Vis-à-vis", p:"Vi-za vi", m:"Karşı karşıya / İlgili olarak."},
+            {f:"Voilà", p:"Vua-la", m:"İşte! (Bir şeyi sunarken kullanılır)."},
+            {f:"Terroir", p:"Ter-ruar", m:"Bir ürünün (şarap/peynir) yetiştiği toprağın ona kattığı özel karakter."},
+            {f:"Avant-garde", p:"A-van gard", m:"Öncü, yenilikçi (sanat vb.)."},
+            {f:"Carte blanche", p:"Kart blanş", m:"Tam yetki, açık çek."},
+            {f:"Faux pas", p:"Fo pa", m:"Gaf, sosyal hata. (Kelime anlamı: Yanlış adım)."},
+            {f:"Je ne sais quoi", p:"Jö nö se kua", m:"Tarif edilemeyen o özel şey. (Kelime anlamı: Ne olduğunu bilmiyorum)."},
+            {f:"Boulangerie", p:"Bu-lan-jö-ri", m:"Fırın / Ekmekçi dükkanı."},
+            {f:"Pâtisserie", p:"Pa-tis-ri", m:"Pastane."},
+            {f:"Chef-d'œuvre", p:"Şef döv-r", m:"Başyapıt."},
+            {f:"Cliché", p:"Kli-şe", m:"Basmakalıp söz veya fikir."},
+            {f:"Dérapage", p:"De-ra-paj", m:"Yoldan çıkma, kontrolü kaybetme."},
+            {f:"Mise en place", p:"Miz an plas", m:"Hazırlık (Mutfakta her şeyi yerli yerine koyma)."},
+            {f:"Oh là là", p:"O la la", m:"Şaşkınlık ünlemi (Vay canına / Eyvah)."},
+            {f:"Bon appétit", p:"Bon a-pe-ti", m:"Afiyet olsun."},
+            {f:"Bon voyage", p:"Bon vo-yaj", m:"İyi yolculuklar."}
+        ]
+    };
+
+    /* ----------------------------------------------------------------
+       UYGULAMA MANTIĞI
+    ---------------------------------------------------------------- */
+    
+    // Anahtarlar
+    const STREAK_KEY = 'fr_streak_count';
+    const LAST_VISIT_KEY = 'fr_last_visit';
+    const STATS_KEY = 'fr_daily_stats';
+    const THEME_KEY = 'fr_theme';
+
+    let currentViewDate = new Date();
+
+    function initApp() {
+        // 1. Tarih Seçici
+        const datePicker = document.getElementById('date-picker');
+        datePicker.valueAsDate = new Date();
+        datePicker.max = new Date().toISOString().split("T")[0]; 
+        
+        datePicker.addEventListener('change', (e) => {
+            currentViewDate = new Date(e.target.value);
+            renderContent();
+        });
+
+        // 2. Tema Yükle
+        initTheme();
+
+        // 3. Verileri Yükle
+        loadStreak();
+        loadDailyStats();
+
+        // 4. İçeriği Göster
+        renderContent();
+        setupQuiz();
+    }
+
+    function initTheme() {
+        const toggle = document.getElementById('checkbox');
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            toggle.checked = true;
+        }
+
+        toggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem(THEME_KEY, 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem(THEME_KEY, 'light');
+            }
+        });
+    }
+
+    function getDayOfYear(dateObj) {
+        const start = new Date(dateObj.getFullYear(), 0, 0);
+        const diff = dateObj - start;
+        return Math.floor(diff / (1000 * 60 * 60 * 24));
+    }
+
+    function renderContent() {
+        const dayOfYear = getDayOfYear(currentViewDate);
+        const year = currentViewDate.getFullYear();
+        const month = currentViewDate.getMonth();
+
+        // Döngü Mantığı
+        const wordIndex = (dayOfYear + year) % DB.words.length;
+        const idiomIndex = (dayOfYear + 15) % DB.idioms.length;
+        const proverbIndex = (dayOfYear + 30) % DB.proverbs.length;
+        const totalMonths = (year * 12) + month; 
+        const specialIndex = totalMonths % DB.specials.length;
+
+        const word = DB.words[wordIndex];
+        const idiom = DB.idioms[idiomIndex];
+        const proverb = DB.proverbs[proverbIndex];
+        const special = DB.specials[specialIndex];
+
+        // UI Güncelle
+        updateCard('word', word);
+        updateCard('idiom', idiom);
+        updateCard('proverb', proverb);
+        updateCard('special', special);
+    }
+
+    function updateCard(type, data) {
+        document.getElementById(`${type}-fr`).textContent = data.f;
+        document.getElementById(`${type}-tr`).textContent = data.m;
+        if(data.p) {
+            document.getElementById(`${type}-pron`).textContent = `/${data.p}/`;
+        }
+    }
+
+    /* ----------------------------------------------------------------
+       SERİ & SKOR MANTIĞI
+    ---------------------------------------------------------------- */
+
+    function loadStreak() {
+        const streak = localStorage.getItem(STREAK_KEY) || 0;
+        document.getElementById('streak-count').textContent = streak;
+    }
+
+    function updateStreak() {
+        const lastVisit = localStorage.getItem(LAST_VISIT_KEY);
+        const todayStr = new Date().toDateString();
+
+        if (lastVisit === todayStr) return; 
+
+        let streak = parseInt(localStorage.getItem(STREAK_KEY) || 0);
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        if (lastVisit === yesterday.toDateString()) {
+            streak++;
+        } else {
+            streak = 1;
+        }
+
+        localStorage.setItem(STREAK_KEY, streak);
+        localStorage.setItem(LAST_VISIT_KEY, todayStr);
+        document.getElementById('streak-count').textContent = streak;
+    }
+
+    function loadDailyStats() {
+        const todayStr = new Date().toDateString();
+        let stats = JSON.parse(localStorage.getItem(STATS_KEY));
+
+        if (!stats || stats.date !== todayStr) {
+            stats = { date: todayStr, correct: 0, wrong: 0 };
+            localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+        }
+
+        document.getElementById('score-correct').textContent = stats.correct;
+        document.getElementById('score-wrong').textContent = stats.wrong;
+    }
+
+    function updateStats(isCorrect) {
+        const todayStr = new Date().toDateString();
+        let stats = JSON.parse(localStorage.getItem(STATS_KEY));
+        
+        if (!stats || stats.date !== todayStr) {
+            stats = { date: todayStr, correct: 0, wrong: 0 };
+        }
+
+        if (isCorrect) stats.correct++;
+        else stats.wrong++;
+
+        localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+        document.getElementById('score-correct').textContent = stats.correct;
+        document.getElementById('score-wrong').textContent = stats.wrong;
+    }
+
+    /* ----------------------------------------------------------------
+       QUIZ MANTIĞI
+    ---------------------------------------------------------------- */
+
+    function setupQuiz() {
+        const container = document.getElementById('quiz-options');
+        const feedback = document.getElementById('quiz-feedback');
+        const question = document.getElementById('quiz-question');
+        
+        container.innerHTML = '';
+        feedback.textContent = '';
+
+        // Rastgele Soru
+        const randomIndex = Math.floor(Math.random() * DB.words.length);
+        const correctWord = DB.words[randomIndex];
+        question.textContent = correctWord.f;
+
+        // Şıkları Oluştur
+        let options = [correctWord];
+        let safety = 0;
+        while(options.length < 4 && safety < 100) {
+            let rnd = Math.floor(Math.random() * DB.words.length);
+            let candidate = DB.words[rnd];
+            if(!options.includes(candidate)) options.push(candidate);
+            safety++;
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        // Butonları Çiz
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-btn';
+            btn.textContent = opt.m; 
+            
+            btn.onclick = () => {
+                document.querySelectorAll('.quiz-btn').forEach(b => b.disabled = true);
+                updateStreak();
+
+                if(opt === correctWord) {
+                    btn.classList.add('correct');
+                    feedback.textContent = "Doğru! 🎉 (Très bien!)";
+                    feedback.style.color = "var(--correct)";
+                    updateStats(true);
+                } else {
+                    btn.classList.add('wrong');
+                    feedback.textContent = `Yanlış. Doğru cevap: ${correctWord.m}`;
+                    feedback.style.color = "var(--wrong)";
+                    
+                    Array.from(container.children).forEach(c => {
+                        if(c.textContent === correctWord.m) c.classList.add('correct');
+                    });
+                    updateStats(false);
+                }
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+
+</script>
+</body>
+</html>
